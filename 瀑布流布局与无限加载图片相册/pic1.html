@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>瀑布流布局与无限加载图片相册</title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: url(../img/bg5.jpg);
+        }
+
+        #items {
+            width: 1060px;
+            margin: 0 auto;
+            border: 1px solid lightpink;
+        }
+
+        .item {
+            border: 1px solid lightpink;
+            width: 200px;
+            color: purple;
+            font-size: 30px;
+            font-weight: bolder;
+            margin: 5px;
+            text-align: center;
+            opacity: 0.8;
+        }
+
+        img {
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="items">
+        <p class="item"><img src="img/1.jpg" />picture-1</p>
+        <p class="item"><img src="img/2.jpg" />picture-2</p>
+        <p class="item"><img src="img/3.jpg" />picture-3</p>
+        <p class="item"><img src="img/4.jpg" />picture-4</p>
+        <p class="item"><img src="img/5.jpg" />picture-5</p>
+        <p class="item"><img src="img/6.jpg" />picture-6</p>
+        <p class="item"><img src="img/7.jpg" />picture-7</p>
+        <p class="item"><img src="img/8.jpg" />picture-8</p>
+        <p class="item"><img src="img/9.jpg" />picture-9</p>
+        <p class="item"><img src="img/10.jpg" />picture-10</p>
+        <p class="item"><img src="img/11.jpg" />picture-11</p>
+        <p class="item"><img src="img/12.jpg" />picture-12</p>
+        <p class="item"><img src="img/13.jpg" />picture-13</p>
+        <p class="item"><img src="img/14.jpg" />picture-14</p>
+        <p class="item"><img src="img/15.jpg" />picture-15</p>
+        <p class="item"><img src="img/16.jpg" />picture-16</p>
+        <p class="item"><img src="img/17.jpg" />picture-17</p>
+        <p class="item"><img src="img/18.jpg" />picture-18</p>
+        <p class="item"><img src="img/19.jpg" />picture-19</p>
+        <p class="item"><img src="img/20.jpg" />picture-20</p>
+    </div>
+    <a href="Handler1.ashx" id="next">下一页</a>
+    <script src="js/jquery-3.1.1.js" type="text/javascript" charset="utf-8"></script>
+    <!--插件的引用-->
+    <script src="js/masonry.pkgd.min.js" type="text/javascript"></script>
+    <script src="js/imagesloaded.pkgd.min.js" type="text/javascript" charset="utf-8"></script>
+    <script src="js/jquery.infinitescroll.min.js"></script>
+    <script>
+        //此方法用来初始化图片（图片全部加载完成时调用）
+        var init = function () {
+            imagesLoaded(document.querySelector('#items'), function (instance) {
+                //此方法用来设置瀑布流布局
+                var msnry = new Masonry("#items", {
+                    itemSelector: ".item",
+                    columnWidth: 0 //列与列之间的宽度
+                });
+                //alert('所有的图片都加载完成了');
+            });
+        }
+
+        init();
+        var num = 0;
+        //此方法是无限加载的方法
+        $("#items").infinitescroll({
+            navSelector: "#next",
+            nextSelector: "a#next",
+            itemSelector: ".item",
+            debug: true,
+            dataType: "json",
+            maxPage: 10,
+            appendCallback: false,
+            path: function (index) {
+                console.log(index);
+                return "Handler1.ashx?page=" + index;
+            }
+        }, function (data) {
+            num -= 20;
+            for (var i = 0; i < data.length; i++) {
+                $("<p class='item'><img src='img/" + (data[i].imgUrl + num) + ".jpg' />" + data[i].Name + "</p>").appendTo("#items")
+                console.log(data[i].imgUrl + "--" + data[i].Name);
+            }
+            init();
+        });
+    </script>
+</body>
+</html>
